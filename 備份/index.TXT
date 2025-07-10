@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>收銀機查詢</title>
+  <style>
+    body { display: flex; font-family: Arial, sans-serif; padding: 50px; }
+    .left { margin-right: 20px; }
+    .right { border: 1px solid #ccc; padding: 20px; min-width: 350px; }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { border: 1px solid #aaa; padding: 5px; }
+    th { background: #eee; text-align: left; }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <h2>請輸入收銀機編號</h2>
+    <input type="text" id="machineInput" placeholder="例如：A0040001" />
+    <button onclick="search()">查詢</button>
+  </div>
+  <div class="right" id="result">
+    <h3>查詢結果</h3>
+    <p>請輸入收銀機編號後按查詢</p>
+  </div>
+
+  <script>
+    function search() {
+      const input = document.getElementById('machineInput').value.trim();
+      if (!input) {
+        alert('請輸入收銀機編號');
+        return;
+      }
+      fetch('/search', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `machine_id=${encodeURIComponent(input)}`
+      })
+      .then(res => res.json())
+      .then(data => {
+        const resultDiv = document.getElementById('result');
+        if (data.error) {
+          resultDiv.innerHTML = `<h3>查詢結果</h3><p style="color:red;">${data.error}</p>`;
+          return;
+        }
+        const fieldsOrder = [
+          '機台屬性', '裝設中信卡機', '裝設聯信卡機', '裝設悠遊卡機',
+          'SC後台IP', 'POS機台IP', '子網路遮罩', '預設閘道'
+        ];
+        let html = '<h3>查詢結果</h3><table><tbody>';
+        fieldsOrder.forEach(key => {
+          if (key in data) {
+            html += `<tr><th>${key}</th><td>${data[key]}</td></tr>`;
+          }
+        });
+        html += '</tbody></table>';
+        resultDiv.innerHTML = html;
+      })
+      .catch(err => {
+        alert('查詢發生錯誤，請稍後再試');
+        console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>收銀機查詢</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      min-height: 100vh;
+    }
+
+    .content {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-grow: 1;
+    }
+
+    .left {
+      flex: 0 0 220px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .right {
+      width: 420px;
+      max-width: 100%;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #2b7cff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1a5fd4;
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background-color: #f7f9fa;
+      font-weight: bold;
+      color: #333;
+      width: 180px;
+    }
+
+    tr:hover {
+      background-color: #f1f7ff;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+
+    footer {
+      font-size: 12px;
+      color: #666;
+      background: #fff;
+      padding: 20px;
+      border-top: 1px solid #ccc;
+      border-radius: 12px;
+      line-height: 1.6;
+      white-space: pre-line;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      max-width: 720px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="left">
+      <h2>查詢機台資料</h2>
+      <input type="text" id="machineInput" placeholder="請輸入收銀機編號（例：A0040001）" />
+      <button onclick="search()">查詢</button>
+    </div>
+
+    <div class="right" id="result">
+      <h3>查詢結果</h3>
+      <p>請在左側輸入收銀機編號後點選查詢</p>
+    </div>
+  </div>
+
+  <footer>
+保密及權利提醒：此網站可能顯示機密信息。若您並非預期使用者，請立即關閉本頁面。誠品股份有限公司及其關係企業，擁有本網站資料內容之所有權利，包括但不限於智慧財產權。任何未經授權對本網站內容之揭露、轉載、使用、修改、散播、發佈或複製皆被嚴格禁止，違者依法追究。為免觸法，特此提醒，謝謝您的合作。
+  </footer>
+
+  <script>
+    function search() {
+      const input = document.getElementById('machineInput').value.trim();
+      if (!input) {
+        alert('請輸入收銀機編號');
+        return;
+      }
+      fetch('/search', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `machine_id=${encodeURIComponent(input)}`
+      })
+      .then(res => res.json())
+      .then(data => {
+        const resultDiv = document.getElementById('result');
+        if (data.error) {
+          resultDiv.innerHTML = `<h3>查詢結果</h3><p class="error">${data.error}</p>`;
+          return;
+        }
+
+        const fieldsOrder = [
+          '機台屬性', '裝設中信卡機', '裝設聯信卡機', '裝設悠遊卡機',
+          'SC後台IP', 'POS機台IP', '子網路遮罩', '預設閘道'
+        ];
+
+        let html = '<h3>查詢結果</h3><table><tbody>';
+        fieldsOrder.forEach(key => {
+          if (key in data) {
+            html += `<tr><th>${key}</th><td>${data[key]}</td></tr>`;
+          }
+        });
+        html += '</tbody></table>';
+        resultDiv.innerHTML = html;
+      })
+      .catch(err => {
+        alert('查詢發生錯誤，請稍後再試');
+        console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
