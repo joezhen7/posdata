@@ -25,7 +25,7 @@
 
     .left, .right {
       background: #fff;
-      padding: 16px 20px;
+      padding: 12px 20px;
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
@@ -106,7 +106,7 @@
       line-height: 1.6;
       white-space: pre-line;
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
-      max-width: 720px;
+      max-width: 700px;
       margin: 0 auto;
     }
 
@@ -146,7 +146,7 @@
 
     <div class="right" id="result">
       <h3>查詢結果</h3>
-      <p>請在左側輸入收銀機編號後點選查詢</p>
+      <p>請在上方輸入收銀機編號後點選查詢</p>
     </div>
   </div>
 
@@ -175,7 +175,7 @@
         }
 
         const fieldsOrder = [
-          '收銀機編號', '機台屬性', '裝設中信卡機', '裝設聯信卡機', '裝設悠遊卡機',
+          '機台屬性', '裝設中信卡機', '裝設聯信卡機', '裝設悠遊卡機',
           'SC後台IP', 'POS機台IP', '子網路遮罩', '預設閘道'
         ];
 
