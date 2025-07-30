@@ -98,11 +98,7 @@
       .then(response => response.json())
       .then(data => {
         const resultDiv = document.getElementById('result');
-        if (data.result) {
-          resultDiv.textContent = data.result;
-        } else {
-          resultDiv.textContent = '查無資料';
-        }
+        resultDiv.textContent = data.result || '查無資料';
       })
       .catch(error => {
         document.getElementById('result').textContent = '查詢失敗，請稍後再試。';
